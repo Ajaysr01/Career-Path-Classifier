@@ -4,26 +4,26 @@ A comprehensive machine learning application that predicts job roles based on us
 
 ## Features
 
-✅ **Three Classification Models:**
+**Three Classification Models:**
 - Random Forest Classifier
 - Support Vector Machine (SVM)
 - Logistic Regression
 
-✅ **Advanced Metrics & Evaluation:**
+**Advanced Metrics & Evaluation:**
 - Accuracy, Precision, Recall, F1-Score
 - ROC-AUC Curves (One-vs-Rest)
 - Confusion Matrices
 - K-Fold Cross-Validation (5 folds)
 - Feature Importance Analysis (Random Forest)
 
-✅ **Interactive Web Interface:**
+**Interactive Web Interface:**
 - Beautiful gradient-based UI
 - Real-time skill input
 - Model selection dropdown
 - Probability bars for each role
 - Mobile-responsive design
 
-✅ **Comprehensive Visualizations:**
+**Comprehensive Visualizations:**
 - Cross-validation performance charts
 - Confusion matrices heatmaps
 - ROC curves for multiclass classification
@@ -39,7 +39,6 @@ A comprehensive machine learning application that predicts job roles based on us
 
 ## Project Structure
 
-\`\`\`
 .
 ├── enhanced_random_forest_model.py    # Enhanced RF with metrics and visualizations
 ├── svm_model.py                       # SVM classifier with ROC-AUC analysis
@@ -50,7 +49,6 @@ A comprehensive machine learning application that predicts job roles based on us
 ├── dataset9000.csv                    # Training dataset
 ├── requirements.txt                   # Python dependencies
 └── README.md                          # This file
-\`\`\`
 
 ## Installation & Setup
 
@@ -59,9 +57,9 @@ A comprehensive machine learning application that predicts job roles based on us
 - pip package manager
 
 ### Step 1: Install Dependencies
-\`\`\`bash
+#bash: 
 pip install -r requirements.txt
-\`\`\`
+
 
 ### Step 2: Prepare Dataset
 Ensure `dataset9000.csv` is in the project root directory.
@@ -69,7 +67,6 @@ Ensure `dataset9000.csv` is in the project root directory.
 ### Step 3: Run Individual Models (Optional)
 To view comprehensive metrics and visualizations for each model:
 
-\`\`\`bash
 # Random Forest
 python enhanced_random_forest_model.py
 
@@ -78,7 +75,6 @@ python svm_model.py
 
 # Logistic Regression
 python logistic_regression_model.py
-\`\`\`
 
 These scripts will generate:
 - Performance metrics (Accuracy, Precision, Recall, F1-Score)
@@ -88,9 +84,7 @@ These scripts will generate:
 - Feature importance charts
 
 ### Step 4: Run Flask Web Application
-\`\`\`bash
 python app.py
-\`\`\`
 
 The application will start at `http://localhost:5000`
 
@@ -143,36 +137,6 @@ The application generates comprehensive plots:
 - Probability visualization with progress bars
 - Model comparison capability
 
-## API Endpoints
-
-\`\`\`
-GET  /                          # Main page
-GET  /api/models                # Get available models
-GET  /api/skills                # Get skills and levels
-POST /api/predict               # Make prediction
-     {
-       "skill1": "level1",
-       ...
-       "model": "random_forest"
-     }
-\`\`\`
-
-## Generated Outputs
-
-When running individual model scripts, the following visualization files are created:
-
-- `role_distribution.png` - Distribution of job roles
-- `cross_validation_analysis.png` - CV metrics across folds
-- `confusion_matrix.png` - RF confusion matrix
-- `feature_importance.png` - Top 15 feature importances
-- `roc_curves.png` - ROC curves for all roles
-- `svm_cross_validation_analysis.png` - SVM CV metrics
-- `svm_confusion_matrix.png` - SVM confusion matrix
-- `svm_roc_curves.png` - SVM ROC curves
-- `lr_cross_validation_analysis.png` - LR CV metrics
-- `lr_confusion_matrix.png` - LR confusion matrix
-- `lr_roc_curves.png` - LR ROC curves
-
 ## Requirements
 
 - Flask 2.3.2
@@ -203,8 +167,8 @@ When running individual model scripts, the following visualization files are cre
 
 ### Support Vector Machine (SVM)
 - kernel: RBF (Radial Basis Function)
-- C: 100
-- gamma: scale
+- C: 1.5
+- gamma: 0.002
 - probability: True
 - Feature scaling: StandardScaler required
 
@@ -222,6 +186,3 @@ When running individual model scripts, the following visualization files are cre
 - Add model performance comparison dashboard
 - Implement user feedback loop for continuous learning
 
-## License
-
-MIT License - Feel free to use and modify for your projects.
