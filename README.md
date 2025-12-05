@@ -39,7 +39,7 @@ A comprehensive machine learning application that predicts job roles based on us
 
 ## Project Structure
 
-.
+```
 ├── enhanced_random_forest_model.py    # Enhanced RF with metrics and visualizations\n
 ├── svm_model.py                       # SVM classifier with ROC-AUC analysis\n
 ├── logistic_regression_model.py       # Logistic Regression baseline model\n
@@ -49,6 +49,7 @@ A comprehensive machine learning application that predicts job roles based on us
 ├── dataset9000.csv                    # Training dataset\n
 ├── requirements.txt                   # Python dependencies\n
 └── README.md                          # This file\n
+```
 
 ## Installation & Setup
 
@@ -57,8 +58,9 @@ A comprehensive machine learning application that predicts job roles based on us
 - pip package manager
 
 ### Step 1: Install Dependencies
-#bash: 
+``` 
 pip install -r requirements.txt
+```
 
 
 ### Step 2: Prepare Dataset
@@ -68,13 +70,20 @@ Ensure `dataset9000.csv` is in the project root directory.
 To view comprehensive metrics and visualizations for each model:
 
 # Random Forest
+```
 python enhanced_random_forest_model.py
 
+```
+
 # SVM
+```
 python svm_model.py
+```
 
 # Logistic Regression
+```
 python logistic_regression_model.py
+```
 
 These scripts will generate:
 - Performance metrics (Accuracy, Precision, Recall, F1-Score)
