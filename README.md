@@ -40,15 +40,15 @@ A comprehensive machine learning application that predicts job roles based on us
 ## Project Structure
 
 .
-├── enhanced_random_forest_model.py    # Enhanced RF with metrics and visualizations
-├── svm_model.py                       # SVM classifier with ROC-AUC analysis
-├── logistic_regression_model.py       # Logistic Regression baseline model
-├── app.py                             # Flask web application
-├── templates/
-│   └── index.html                     # Interactive frontend
-├── dataset9000.csv                    # Training dataset
-├── requirements.txt                   # Python dependencies
-└── README.md                          # This file
+├── enhanced_random_forest_model.py    # Enhanced RF with metrics and visualizations\n
+├── svm_model.py                       # SVM classifier with ROC-AUC analysis\n
+├── logistic_regression_model.py       # Logistic Regression baseline model\n
+├── app.py                             # Flask web application\n
+├── templates/\n
+│   └── index.html                     # Interactive frontend\n
+├── dataset9000.csv                    # Training dataset\n
+├── requirements.txt                   # Python dependencies\n
+└── README.md                          # This file\n
 
 ## Installation & Setup
 
