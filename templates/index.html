@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Role Predictor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1a1f35 50%, #0f172a 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #e2e8f0;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -20%;
+            left: -5%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.06) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            max-width: 900px;
+            width: 100%;
+            padding: 50px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #f1f5f9;
+            font-size: 32px;
+            margin-bottom: 10px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            color: #94a3b8;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .model-section {
+            background: rgba(30, 41, 59, 0.5);
+            padding: 25px;
+            border-radius: 14px;
+            margin-bottom: 35px;
+            border: 1px solid rgba(148, 163, 184, 0.08);
+            backdrop-filter: blur(10px);
+        }
+
+        .model-section h3 {
+            color: #cbd5e1;
+            margin-bottom: 18px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            font-weight: 600;
+        }
+
+        .model-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .model-btn {
+            padding: 14px 18px;
+            border: 1px solid rgba(148, 163, 184, 0.15);
+            background: rgba(71, 85, 105, 0.3);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 13px;
+            font-weight: 600;
+            color: #cbd5e1;
+            backdrop-filter: blur(5px);
+        }
+
+        .model-btn:hover {
+            border-color: rgba(59, 130, 246, 0.5);
+            background: rgba(59, 130, 246, 0.1);
+            color: #e2e8f0;
+            transform: translateY(-2px);
+        }
+
+        .model-btn.active {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.25) 0%, rgba(168, 85, 247, 0.15) 100%);
+            color: #60a5fa;
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+        }
+
+        .form-section {
+            margin-bottom: 35px;
+        }
+
+        .form-section h2 {
+            color: #f1f5f9;
+            font-size: 18px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+        }
+
+        .form-section h2::before {
+            content: '';
+            width: 3px;
+            height: 24px;
+            background: linear-gradient(180deg, #3b82f6 0%, #a855f7 100%);
+            border-radius: 2px;
+            margin-right: 12px;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .skill-group {
+            background: rgba(30, 41, 59, 0.4);
+            padding: 18px;
+            border-radius: 12px;
+            border: 1px solid rgba(148, 163, 184, 0.08);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(8px);
+        }
+
+        .skill-group:hover {
+            background: rgba(30, 41, 59, 0.6);
+            border-color: rgba(148, 163, 184, 0.15);
+        }
+
+        .skill-group label {
+            display: block;
+            color: #e2e8f0;
+            font-weight: 600;
+            margin-bottom: 12px;
+            font-size: 13px;
+        }
+
+        .skill-group select {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1px solid rgba(148, 163, 184, 0.15);
+            border-radius: 8px;
+            font-size: 13px;
+            color: #e2e8f0;
+            background-color: rgba(15, 23, 42, 0.8);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .skill-group select:hover {
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .skill-group select:focus {
+            outline: none;
+            border-color: rgba(59, 130, 246, 0.6);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+            background-color: rgba(15, 23, 42, 0.95);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        button {
+            padding: 13px 32px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 0.3px;
+        }
+
+        .btn-predict {
+            background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+            color: white;
+            flex: 1;
+            max-width: 200px;
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-predict:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-predict:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-reset {
+            background: rgba(71, 85, 105, 0.5);
+            color: #cbd5e1;
+            flex: 1;
+            max-width: 200px;
+            border: 1px solid rgba(148, 163, 184, 0.15);
+            backdrop-filter: blur(5px);
+        }
+
+        .btn-reset:hover {
+            background: rgba(71, 85, 105, 0.7);
+            color: #e2e8f0;
+            border-color: rgba(148, 163, 184, 0.25);
+        }
+
+        .results {
+            display: none;
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            padding: 35px;
+            border-radius: 14px;
+            margin-top: 35px;
+        }
+
+        .results.show {
+            display: block;
+            animation: slideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .predicted-role {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .predicted-role h3 {
+            color: #94a3b8;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .predicted-role .role-name {
+            font-size: 38px;
+            background: linear-gradient(135deg, #60a5fa 0%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            margin-bottom: 18px;
+        }
+
+        .confidence {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .confidence-badge {
+            background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+            color: white;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .model-used {
+            font-size: 12px;
+            color: #64748b;
+            text-align: center;
+            margin-top: 12px;
+        }
+
+        .probabilities {
+            margin-top: 28px;
+        }
+
+        .probabilities h4 {
+            color: #e2e8f0;
+            margin-bottom: 18px;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .probability-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+            padding: 12px 14px;
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .probability-item:hover {
+            background: rgba(15, 23, 42, 0.6);
+        }
+
+        .role-label {
+            min-width: 150px;
+            color: #cbd5e1;
+            font-weight: 500;
+            font-size: 13px;
+        }
+
+        .probability-bar {
+            flex: 1;
+            height: 24px;
+            background: rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            margin: 0 16px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .probability-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6 0%, #06b6d4 100%);
+            border-radius: 12px;
+            transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .probability-percentage {
+            min-width: 55px;
+            text-align: right;
+            color: #60a5fa;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 28px;
+        }
+
+        .spinner {
+            border: 3px solid rgba(148, 163, 184, 0.1);
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            display: none;
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            padding: 16px 18px;
+            border-radius: 10px;
+            margin-top: 24px;
+            border-left: 3px solid #ef4444;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .error-message.show {
+            display: block;
+            animation: slideIn 0.4s ease;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 26px;
+            }
+
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn-predict, .btn-reset {
+                max-width: 100%;
+            }
+
+            .role-label {
+                min-width: 100px;
+                font-size: 12px;
+            }
+
+            .predicted-role .role-name {
+                font-size: 32px;
+            }
+
+            .model-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .results {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💼 Job Role Predictor</h1>
+            <p>Select your skill levels and choose a model to discover your ideal career path</p>
+        </div>
+
+        <div class="model-section">
+            <h3>Select Prediction Model</h3>
+            <div class="model-buttons" id="modelButtons">
+                <!-- Model buttons will be loaded here -->
+            </div>
+        </div>
+
+        <form id="predictionForm">
+            <div class="form-section">
+                <h2>Rate Your Skills</h2>
+                <div class="skills-grid" id="skillsGrid">
+                    <!-- Skills will be loaded here -->
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn-predict">🚀 Predict Role</button>
+                <button type="reset" class="btn-reset">↻ Clear All</button>
+            </div>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Analyzing your skills...</p>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+
+        <div class="results" id="results">
+            <div class="predicted-role">
+                <h3>Your Predicted Role</h3>
+                <div class="role-name" id="predictedRole">-</div>
+                <div class="confidence">
+                    <span>Confidence:</span>
+                    <span class="confidence-badge" id="confidenceScore">-</span>
+                </div>
+                <div class="model-used" id="modelUsed">-</div>
+            </div>
+
+            <div class="probabilities">
+                <h4>Role Probabilities</h4>
+                <div id="probabilityList">
+                    <!-- Probabilities will be displayed here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('predictionForm');
+        const skillsGrid = document.getElementById('skillsGrid');
+        const modelButtons = document.getElementById('modelButtons');
+        const loading = document.getElementById('loading');
+        const results = document.getElementById('results');
+        const errorMessage = document.getElementById('errorMessage');
+
+        let selectedModel = 'random_forest';
+
+        // Load models and skills on page load
+        async function loadPage() {
+            try {
+                // Load available models
+                const modelsResponse = await fetch('/api/models');
+                const modelsData = await modelsResponse.json();
+
+                modelButtons.innerHTML = '';
+                modelsData.models.forEach((model, index) => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = `model-btn ${index === 0 ? 'active' : ''}`;
+                    btn.innerHTML = `<strong>${model.name}</strong><br><small>${model.description}</small>`;
+                    btn.onclick = (e) => {
+                        e.preventDefault();
+                        selectModel(model.id, btn);
+                    };
+                    modelButtons.appendChild(btn);
+                });
+
+                // Load skills
+                const skillsResponse = await fetch('/api/skills');
+                const skillsData = await skillsResponse.json();
+
+                skillsGrid.innerHTML = '';
+                skillsData.skills.forEach(skill => {
+                    const skillGroup = document.createElement('div');
+                    skillGroup.className = 'skill-group';
+                    
+                    const label = document.createElement('label');
+                    label.textContent = skill;
+                    
+                    const select = document.createElement('select');
+                    select.name = skill;
+                    select.required = true;
+                    
+                    select.innerHTML = '<option value="">-- Select Level --</option>';
+                    skillsData.levels.forEach(level => {
+                        const option = document.createElement('option');
+                        option.value = level;
+                        option.textContent = level;
+                        select.appendChild(option);
+                    });
+                    
+                    skillGroup.appendChild(label);
+                    skillGroup.appendChild(select);
+                    skillsGrid.appendChild(skillGroup);
+                });
+            } catch (error) {
+                showError('Failed to load page data. Please refresh.');
+                console.error('Error loading page:', error);
+            }
+        }
+
+        function selectModel(modelId, buttonElement) {
+            selectedModel = modelId;
+            document.querySelectorAll('.model-btn').forEach(btn => btn.classList.remove('active'));
+            buttonElement.classList.add('active');
+        }
+
+        // Handle form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+            data.model = selectedModel;
+
+            console.log('[v0] Sending prediction request:', data);
+            
+            loading.style.display = 'block';
+            results.classList.remove('show');
+            errorMessage.classList.remove('show');
+
+            try {
+                const response = await fetch('/api/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                console.log('[v0] Response status:', response.status);
+                
+                const result = await response.json();
+                console.log('[v0] Response data:', result);
+
+                if (result.error) {
+                    showError(result.error);
+                } else if (!result.predicted_role) {
+                    showError('No prediction generated. Please check console for details.');
+                } else {
+                    displayResults(result);
+                }
+            } catch (error) {
+                showError('Error making prediction: ' + error.message);
+                console.error('[v0] Prediction error:', error);
+            } finally {
+                loading.style.display = 'none';
+            }
+        });
+
+        function displayResults(result) {
+            console.log('[v0] Displaying results:', result);
+            
+            document.getElementById('predictedRole').textContent = result.predicted_role;
+            document.getElementById('confidenceScore').textContent = 
+                (result.confidence * 100).toFixed(1) + '%';
+            
+            const modelName = result.model_used === 'random_forest' ? 'Random Forest' :
+                            result.model_used === 'svm' ? 'Support Vector Machine' :
+                            'Logistic Regression';
+            document.getElementById('modelUsed').textContent = `Predicted using: ${modelName}`;
+
+            const probabilityList = document.getElementById('probabilityList');
+            probabilityList.innerHTML = '';
+
+            // Sort probabilities in descending order
+            const sorted = Object.entries(result.probabilities)
+                .sort(([,a], [,b]) => b - a);
+
+            sorted.forEach(([role, probability]) => {
+                const item = document.createElement('div');
+                item.className = 'probability-item';
+
+                const label = document.createElement('div');
+                label.className = 'role-label';
+                label.textContent = role;
+
+                const barContainer = document.createElement('div');
+                barContainer.className = 'probability-bar';
+
+                const fill = document.createElement('div');
+                fill.className = 'probability-fill';
+                fill.style.width = (probability * 100) + '%';
+                fill.textContent = (probability * 100).toFixed(0) + '%';
+
+                barContainer.appendChild(fill);
+
+                const percentage = document.createElement('div');
+                percentage.className = 'probability-percentage';
+                percentage.textContent = (probability * 100).toFixed(1) + '%';
+
+                item.appendChild(label);
+                item.appendChild(barContainer);
+                item.appendChild(percentage);
+                probabilityList.appendChild(item);
+            });
+
+            results.classList.add('show');
+        }
+
+        function showError(message) {
+            console.error('[v0] Error:', message);
+            errorMessage.textContent = message;
+            errorMessage.classList.add('show');
+        }
+
+        // Load page when document is ready
+        loadPage();
+    </script>
+</body>
+</html>
